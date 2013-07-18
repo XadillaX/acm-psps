@@ -8,11 +8,11 @@ WHAT'S ACM PSPS
 
 You can see the effect here: http://acm.nbut.edu.cn/psps
 
-This system is mainly for [ACM/ICPC](http://icpc.baylor.edu/ ACM/ICPC) Online Judge System.
+This system is mainly for [ACM/ICPC](http://icpc.baylor.edu/) Online Judge System.
 
 When you hold a contest on your Online Judge, you can publish the problem solution of this contest after it.
 
-This system is based on an opensource PHP framework ***[ThinkPHP](https://github.com/liu21st/thinkphp ThinkPHP) Release 3.1***. And the account service is based on [Douban](http://douban.com/). The comment service is [Denglu](https://denglu.cc).
+This system is based on an opensource PHP framework ***[ThinkPHP](https://github.com/liu21st/thinkphp) Release 3.1***. And the account service is based on [Douban](http://douban.com/). The comment service is [Denglu](https://denglu.cc).
 
 HOW TO SET UP IT
 ----------------
