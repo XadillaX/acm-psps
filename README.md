@@ -37,6 +37,12 @@ Set up your denglu by editting `./src/Tpl/default/Contest/view.html`.
 >
 > Of cause, you can register other comment service and replace it entirely.
 
+***Important***
+
+ACM PSPS is using `pandoc` to render the markdown code. So you have to make sure that your server has already installed `pandoc`.
+
+You can refer to http://johnmacfarlane.net/pandoc/
+
 After doing those things, you can run this website!
 
 MANAGE
