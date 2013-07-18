@@ -6,7 +6,7 @@ ACM Problem Solution Publish System
 WHAT'S ACM PSPS
 ---------------
 
-You can see the effect here: http://acm.nbut.edu.cn/
+You can see the effect here: http://acm.nbut.edu.cn/psps
 
 This system is mainly for [ACM/ICPC](http://icpc.baylor.edu/ ACM/ICPC) Online Judge System.
 
