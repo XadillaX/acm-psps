@@ -1,0 +1,125 @@
+<script type="text/javascript">
+function append_row(key, title) {
+    var str = "<tr id=\"prob-id-" + key + "\">";
+    str += "<td class='key-td' style='text-align: center;'>" + key + "</td>";
+    str += "<td class='title-td'>" + title + "</td>";
+    str += "<td style='text-align: center;'>";
+    str += "<button class='btn btn-mini edit-btn' onclick='edit_problem(\"" + key + "\");' data-loading-text='Edit'>Edit</button> ";
+    str += "<button class='btn btn-mini del-btn' onclick='del_problem(\"" + key + "\");' data-loading-text='Del'>Del</button>";
+    str += "</td>";
+    str += "</tr>";
+
+    $("#problem-list tbody").append(str);
+}
+    
+function append_problem_list(content) {
+    console.log(content);
+    
+    for(var key in content["prob"]) {
+        append_row(key, content["prob"][key]);
+    }
+}
+
+function edit_problem(key) {
+    var url = "{:U('pub/problem')}?id=" + old_content["id"] + "&index=" + key;
+    window.location.href = url;
+}
+
+function del_problem(key) {
+    var obj = $("#prob-id-" + key);
+    var cfm_msg = "Are you sure to delete problem [" + key + "] " + obj.find(".title-td").html() + "?";
+    
+    if(confirm(cfm_msg)) {
+        obj.find("button").button("loading");
+        
+        var post = {
+            "id"    : old_content["id"],
+            "index" : key
+        };
+        
+        $.post("{:U('pub/del_contest_problem', array(), 'json')}", post, function(e){
+            var json = JSON.parse(e);
+            if(json["status"] === 0) {
+                alert_tip(json["content"], "Error");
+                obj.find("button").button("reset");
+            } else {
+                alert_tip("<span style='color: red;'>Succeed.</span>", "Succeed");
+                obj.remove();
+            }
+        });
+    }
+}
+
+function add_problem() {
+    $("#add-id").attr("readonly", "1");
+    $("#add-title").attr("readonly", "1");
+    $("#add-prob-btn").button("loading");
+
+    var arr = {
+        "id"        : old_content["id"],
+        "index"     : $("#add-id").val(),
+        "title"     : $("#add-title").val()
+    };
+
+    $.post("{:U('pub/add_contest_problem', array(), 'json')}", arr, function(e){
+        var json = JSON.parse(e);
+
+        $("#add-id").removeAttr("readonly");
+        $("#add-title").removeAttr("readonly");
+        $("#add-prob-btn").button("reset");
+
+        if(json["status"] === 0) {
+            alert_tip(json["content"], "Error");
+            return;
+        } else {
+            append_row(json["content"]["index"], json["content"]["title"]);
+            alert_tip("<span style='color: red;'>Succeed.</span>", "Succeed");
+
+            $("#add-id").val("");
+            $("#add-title").val("");
+
+            return;
+        }
+    });
+}
+
+$(function(){
+    $("#add-prob-btn").click(function(){
+        add_problem();
+    });
+    
+    $("#add-id,#add-title").keypress(function(){
+        if(event.keyCode == 13) {
+            add_problem();
+        }
+    });
+});
+</script>
+
+<table class="table table-striped table-hover" id="problem-list">
+    <thead>
+        <tr>
+            <th style="width: 20%; text-align: center;">Prob ID</th>
+            <th>Title</th>
+            <th style="width: 20%; text-align: center;">Operation</th>
+        </tr>
+    </thead>
+    
+    <tfoot>
+        <tr class="warning">
+            <td style="text-align: center;">
+                <input style="text-align: center;" class="input-mini" id="add-id" type="text" />
+            </td>
+            <td>
+                <input class="input-block-level" id="add-title" type="text" />
+            </td>
+            <td style="text-align: center;">
+                <button class='btn btn-danger' id="add-prob-btn" data-loading-text="Adding...">Add</button>
+            </td>
+        </tr>
+    </tfoot>
+    
+    <tbody>
+        
+    </tbody>
+</table>

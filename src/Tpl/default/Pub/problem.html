@@ -1,0 +1,82 @@
+<include file="shell-header" />
+
+<script type="text/javascript">
+var old_content = null;
+var queryString = {
+    "id"        : getQueryStringByName("id"),
+    "index"     : getQueryStringByName("index")
+};
+</script>
+
+<div class="center loading-div">
+    <img src="{$webroot}/images/loading.gif" /><br />
+    <span id="loading-tip">Loading data from server...</span>
+</div>
+
+<div class="mainbody">
+    <fieldset>
+            <legend><span id="prob-show-title">[A] Annie</span> <small><a id="back-a" href='{:U("pub/contest")}?id=2#problems-tab'>Back</a></small></legend>
+            
+            <div class="tabbable">
+                <ul class="nav nav-pills" id="contest-tabs">
+                    <li class="active"><a id="show-summary-tab" href="#summary-tab" data-toggle="tab">Summary</a></li>
+                    <li><a id="show-markdown-tab" href="#markdown-tab" data-toggle="tab">Markdown</a></li>
+                    <li><a id="show-code-tab" href="#code-tab" data-toggle="tab">Code</a></li>
+                </ul>
+                
+                <div class="tab-content">
+                    <div id='summary-tab' class='tab-pane active'>
+                        <include file='problem-summary-part' />
+                    </div>
+                    
+                    <div id='markdown-tab' class='tab-pane' style="height: 720px;">
+                        <include file='problem-markdown-part' />
+                    </div>
+                    
+                    <div id='code-tab' class='tab-pane'>
+                        <include file='problem-code-part' />
+                    </div>
+                </div>
+            </div>
+    </fieldset>
+</div>
+
+<script type="text/javascript">
+function total_init() {
+    $("#prob-show-title").html("[" + old_content["index"] + "] " + old_content["title"]);
+    $("#back-a").attr("href", "{:U('pub/contest')}?id=" + queryString["id"] + "#problems-tab");
+    
+    summary_init();
+    markdown_init();
+    code_init();
+    
+    $(".loading-div").fadeOut("normal", function(){
+        $(".mainbody").slideDown("normal", function(){
+        });
+    });
+}
+    
+$(function(){
+    console.log(queryString);
+    
+    if(queryString["index"] == "" || queryString["id"] == "") {
+        $("#loading-tip").html("Invalid contest id or problem index...");
+            $("#loading-tip").addClass("label label-important");
+            return;
+    }
+    
+    $.get("{:U('pubjson/problem_info', array(), 'json')}", { "id" : queryString["id"], "index" : queryString["index"] }, function(e){
+        json = JSON.parse(e);
+        if(json["status"] === 0) {
+            $("#loading-tip").html(json["content"]);
+            $("#loading-tip").addClass("label label-important");
+            return;
+        }
+        
+        old_content = json["content"];
+        total_init();
+    });
+});
+</script>
+
+<include file="shell-footer" />

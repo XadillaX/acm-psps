@@ -1,0 +1,76 @@
+<include file="shell-header" />
+
+<script type="text/javascript">
+function del_contest(id) {
+    var obj = $("#contest-" + id);
+    if(confirm("Are you sure to del this contest?\n" + obj.html())) {
+        $.get("{:U('pub/del_contest', array(), 'json')}", { "id" : id }, function(e){
+            var json = JSON.parse(e);
+            if(json["status"] === 0) {
+                alert_tip(json["content"], "Error");
+                return;
+            } else {
+                window.location.href = window.location.href;
+            }
+        });
+    }
+}
+    
+$(function(){
+    $.get("{:U('pubjson/contest_list', array(), 'json')}", {}, function(e){
+        var json = JSON.parse(e);
+        if(json["status"] === 0) {
+            alert_tip(json["content"], "Error");
+            $(".loading-div").fadeOut("normal", function(){
+                $(".mainbody").html("<h1>An error occured</h1><p>" + json["content"] + "</p>");
+                $(".mainbody").fadeIn();
+            });
+            return;
+        } else {
+            for(var key in json["content"]) {
+                var html = "<li><a id='contest-" + key + "' href='{:U('pub/contest')}?id=" + key + "'>" + json["content"][key] + "</a> [<a href='javascript:del_contest(" + key + ");'>Del</a>]</li>";
+                $("#mainlist").prepend(html);
+            }
+            $(".loading-div").fadeOut("normal", function(){
+                $(".mainbody").fadeIn();
+            });
+        }
+    });
+    
+    $("#add-submit").click(function(){
+        if($("#add-submit").html() === "Adding...") return;
+        
+        $("#add-submit").button("loading");
+    
+        $.post("{:U('pub/add_contest', array(), 'json')}", {
+            "title"     : $("#add-contest-ipt").val()
+        }, function(e){
+            var json = JSON.parse(e);
+            if(json["status"] === 0) {
+                alert_tip(json["content"], "Error");
+                $("#add-submit").button("reset");
+                return;
+            } else {
+                window.location.href = window.location.href;
+            }
+        });
+    });
+});
+</script>
+
+    <div class="center loading-div">
+        <img src="{$webroot}/images/loading.gif" /><br />
+        Loading data from server...
+    </div>
+
+    <div class="mainbody">
+        <div class="form-inline" style="margin-bottom: 10px;">
+            <input type="text" placeholder="To add a new contest..." id="add-contest-ipt" /> <button data-loading-text="Adding..." id="add-submit" class="btn" type="button">Add</button>
+        </div>
+        
+        <ul id="mainlist">
+            
+        </ul>
+    </div>
+
+<include file="shell-footer" />

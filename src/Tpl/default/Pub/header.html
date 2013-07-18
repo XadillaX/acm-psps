@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>{$title} :: {$title_suffix}</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        
+        <link href='http://fonts.googleapis.com/css?family=Happy+Monkey' rel='stylesheet' type='text/css'>
+        
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link href="{$webroot}/bootstrap/css/bootstrap-cyborg.min.css" rel="stylesheet" media="screen">
+        <link href="{$webroot}/css/jquery.jgrowl.min.css" rel="stylesheet" media="screen">
+        <link href="{$webroot}/css/publish.css" rel="stylesheet" media="screen">
+        
+        <script type="text/javascript" src="{$webroot}/js/jquery-2.0.0.min.js"></script>
+        <script type="text/javascript" src="{$webroot}/js/jquery.backstretch.min.js"></script>
+        <script type="text/javascript" src="{$webroot}/js/jquery.jgrowl.min.js"></script>
+        <script type="text/javascript" src="{$webroot}/js/json2.js"></script>
+        
+        <script type="text/javascript" src="{$webroot}/bootstrap/js/bootstrap.min.js"></script>
+        <script type="text/javascript" src="{$webroot}/js/common.js"></script>
+        
+        <script type="text/javascript">
+        function alert_tip(msg, header) {
+            if(header === undefined) header = "Message";
+            
+            $.jGrowl(msg, {
+                "header"    : header,
+                "position"  : "bottom-right",
+                "sticky"    : true
+            });
+        }
+            
+        $(function(){
+            //$.backstretch("{$webroot}/images/background.jpg");
+            
+            <if condition="$once_alert neq null">
+            alert_tip("{$once_alert['msg']}", "{$once_alert['header']}");
+            </if>
+        });
+        </script>
+    </head>
+    <body>
+        <div class="navbar-wrapper">
+            <div class="container">
+                <div class="navbar navbar-inverse">
+                    <div class="navbar-inner">
+                        <a class="brand" href="{$webroot}/pub">Administrator Panel</a>
+
+                        <div class="nav-collapse collapse">
+                            <ul class="nav">
+                                <li><a href="{$webroot}/pub/">Contest List</a></li>
+                            </ul>
+                            
+                            <ul class="nav">
+                                <if condition="$userinfo eq null">
+                                    <li><a href="{$webroot}/pub/login">Log in</a></li>
+                                <else />
+                                    <li><a href="{$webroot}/pub/logout">Log out</a></li>
+                                </if>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="container">

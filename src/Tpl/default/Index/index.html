@@ -1,0 +1,39 @@
+<include file='header' />
+        
+<div class="hero">
+    <div class="row">
+        <div class="span12">
+            <if condition='$lastest eq null'>
+                <h1><span class='color'>No</span> Solution!</h1>
+                <h2>You can go to the online judge.</h2>
+            <else />
+                <h1>The <span class="color">Latest</span> Contest Solution</h1>
+                <h2><a class="color" href="{$webroot}/contest/view/{$lastest['id']}">{$lastest["title"]}</a></h2>
+                <div class="rounds">
+                    <div class="round"><a href="{$webroot}/contest/view/{$lastest['id']}#summary">Summary</a></div> 
+                    <div class="round"><a href="{$webroot}/contest/view/{$lastest['id']}#problems">Problems</a></div>
+                    <br />
+                    <div class="round"><a href="{$webroot}/contest/view/{$lastest['id']}#comments">Comments</a></div> 
+                    <div class="round"><a target='_blank' href="{$lastest['url']}">Contest</a></div>
+                </div>
+            </if>
+        </div>
+    </div>
+</div>
+
+<hr />
+
+<div class="cta">
+    <div class="row">
+        <div class="span6">
+            <!-- Big title -->
+            <h2>Wanna the previous<span class="color">?</span></h2>
+        </div>
+        <div class="span6 right-p">
+            <!-- Para -->
+            <p>There are not only one solution in this system. You can click <a class='color' href='{$webroot}/contest/page'>HERE</a> to view all of them.</p>
+        </div>
+    </div>
+</div>
+    
+<include file='footer' />

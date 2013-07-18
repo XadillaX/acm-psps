@@ -1,0 +1,168 @@
+<include file="shell-header" />
+
+<script type="text/javascript" src="{$webroot}/epiceditor/js/epiceditor.min.js"></script>
+
+<script type="text/javascript" src="{$webroot}/datepicker/js/bootstrap-datepicker.js"></script>
+<link href="{$webroot}/datepicker/css/datepicker.css" rel="stylesheet" media="screen">
+
+<script type="text/javascript">
+var md_opts = {
+    container: 'epiceditor',
+    basePath: '{$webroot}/epiceditor',
+    clientSideStorage: true,
+    useNativeFullsreen: true,
+    parser: marked,
+    file: {
+        name: 'epiceditor',
+        defaultContent: '',
+        autoSave: 100
+    },
+    theme: {
+        base:'/themes/base/epiceditor.css',
+        preview:'/themes/preview/preview-dark.css',
+        editor:'/themes/editor/epic-dark.css'
+    },
+    focusOnLoad: false,
+    shortcut: {
+        modifier: 18,
+        fullscreen: 70,
+        preview: 80
+    }
+};
+
+var old_content = null;
+var summary_editor = null;
+
+function get_json(id) {
+    var url = "{:U('pubjson/contest_info', array('id' => $_GET['id']), 'json')}";
+    $.get(url, {}, function(e){
+        var json = JSON.parse(e);
+        if(json["status"] === 0) {
+            $("#loading-tip").html("Invalid contest id...");
+            $("#loading-tip").addClass("label label-important");
+            return;
+        }
+        
+        var content = json["content"];
+        $("#title").val(content["title"]);
+        $("#url").val(content["url"]);
+        $("#time").val(content["time2"]);
+        $('#time').datepicker();
+        md_opts["localStorageName"] = "summary-storage-" + id;
+        md_opts["file"]["defaultContent"] = content["md"];
+        md_opts["file"]["name"] = "contest-summary-" + id + ".md";
+        old_content = content;
+        
+        $("legend").append(" - { " + content["title"] + " }");
+        
+        append_problem_list(content);
+        
+        $(".loading-div").fadeOut("normal", function(){
+            $(".mainbody").slideDown("normal", function(){
+                summary_editor = new EpicEditor(md_opts);
+                summary_editor.load();
+                summary_editor.importFile("contest-summary-" + old_content["id"] + ".md", old_content["md"]);
+                
+                if(window.location.hash === "#problems-tab") {
+                    $("#contest-tabs a:last").tab("show");
+                }
+            });
+        });
+    });
+}
+
+$(function(){
+    var id = getQueryStringByName("id");
+    if(id === "") {
+        $("#loading-tip").html("Invalid contest id...");
+        $("#loading-tip").addClass("label label-important");
+        return;
+    }
+   
+    get_json(getQueryStringByName("id"));
+    
+    $("#resetmd").click(function(){
+        if(old_content === null) return;
+        if(summary_editor === null) return;
+        summary_editor.importFile("contest-summary-" + old_content["id"] + ".md", old_content["md"]);
+        
+        console.log("filename: " + "contest-summary-" + old_content["id"] + ".md");
+        console.log("content: " + old_content["md"]);
+    });
+    
+    $("#edit-form").submit(function(){
+        var md = summary_editor.exportFile();
+        
+        var post = {
+            "title"     : $("#title").val(),
+            "url"       : $("#url").val(),
+            "time"      : $("#time").val(),
+            "md"        : md,
+            "id"        : old_content["id"]
+        };
+        
+        $.post("{:U('pub/edit_content_summary', array(), 'json')}", post, function(e){
+            var json = JSON.parse(e);
+            if(json["status"] === 0) {
+                alert_tip(json["content"], "Failed while editing");
+                return;
+            } else {
+                $("legend").html("Edit Contest - { " + $("#title").val() + " }");
+                alert_tip("<span style='color: red;'>Succeed.</span>", "Succeed");
+                old_content["md"] = md;
+                return;
+            }
+        });
+        
+        return false;
+    });
+});
+</script>
+
+    <div class="center loading-div">
+        <img src="{$webroot}/images/loading.gif" /><br />
+        <span id="loading-tip">Loading data from server...</span>
+    </div>
+
+    <div class="mainbody">
+        <fieldset>
+            <legend>Edit Contest</legend>
+
+            <div class="tabbable">
+                <ul class="nav nav-pills" id="contest-tabs">
+                    <li class="active"><a href="#summary-tab" data-toggle="tab">Summary</a></li>
+                    <li><a href="#problems-tab" data-toggle="tab">Problems</a></li>
+                </ul>
+
+                <div class="tab-content">
+                    <!-- Summary -->
+                    <div class="tab-pane active" id="summary-tab">
+                        <form id="edit-form">
+                            <label for="title">Contest Name</label>
+                            <input id="title" type="text" placeholder="Contest Name...">
+
+                            <label for="url">Contest Url</label>
+                            <input id="url" type="text" placeholder="Contest URL...">
+
+                            <label for="time">Contest Time</label>
+                            <input id="time" type="text" placeholder="Contest Time..." readonly>
+
+                            <label>Contest Summary (Pandoc)</label>
+                            <div id="epiceditor"></div>
+
+                            <br />
+                            <button id="submit" type="submit" class="btn btn-primary">Submit</button>
+                            <button id="resetmd" type="button" class="btn btn-inverse">Reset Markdown</button>
+                        </form>
+                    </div>
+
+                    <!-- Problems -->
+                    <div class="tab-pane" id="problems-tab">
+                        <include file="edit-problems" />
+                    </div>
+                </div>
+            </div>
+        </fieldset>
+    </div>
+
+<include file="shell-footer" />

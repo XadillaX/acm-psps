@@ -1,0 +1,21 @@
+
+            </div>
+            <div class="span4">
+                <div class="well">
+                    <div class="row-fluid">
+                        <div class="span3">
+                            <img style="margin-top: 5px;" class='img-rounded' src="{$userinfo['avatar']}" />
+                        </div>
+                        
+                        <div class='span9'>
+                            <strong><a href='{$userinfo["alt"]}' target="_blank">{$userinfo['uid']}</a></strong> <br />
+                            {$userinfo['desc']} <br /><br />
+                            
+                            <a href='{:U('pub/logout')}'>Log out</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+<include file="footer" />

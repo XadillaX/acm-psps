@@ -1,0 +1,55 @@
+<form id="summary-form">
+    <label for="index">Index</label>
+    <input id="index-ipt" type="text" placeholder="Problem index..." readonly="">
+
+    <label for="name">Title</label>
+    <input id="name-ipt" type="text" placeholder="Problem name...">
+
+    <label for="url">URL</label>
+    <input id="url-ipt" type="text" placeholder="Problem url...">
+
+    <label for="tags">Tags</label>
+    <input id="tags-ipt" type="text" placeholder="Splited by ','...">
+
+    <br />
+    <button id="submit" type="submit" class="btn btn-primary" data-loading-text="Submiting...">Submit</button>
+</form>
+
+<script type="text/javascript">
+function summary_init() {
+    $("#index-ipt").val(old_content["index"]);
+    $("#name-ipt").val(old_content["title"]);
+    $("#url-ipt").val(old_content["url"]);
+    $("#tags-ipt").val(old_content["tags"]);
+    
+    $("#summary-form").submit(function(){
+        if($("#submit").html() === "Submiting...") return false;
+        
+        $("#submit").button("loading");
+        
+        $.post("{:U('pub/edit_problem_summary')}", {
+            "id"        : queryString["id"],
+            "index"     : queryString["index"],
+            "title"     : $("#name-ipt").val(),
+            "url"       : $("#url-ipt").val(),
+            "tags"      : $("#tags-ipt").val()
+        }, function(e){
+            var json = JSON.parse(e);
+            if(json["status"] === 0) {
+                $("#submit").button("reset");
+                alert_tip(json["content"], "Error");
+                return;
+            } else {
+                $("#submit").button("reset");
+                alert_tip("<span style='color: red;'>Succeed.</span>", "Succeed");
+                old_content = json["content"];
+                $("#prob-show-title").html("[" + old_content["index"] + "] " + old_content["title"]);
+                return;
+            }
+        });
+        
+        return false;
+    });
+}
+</script>
+    

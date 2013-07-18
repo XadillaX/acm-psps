@@ -1,0 +1,26 @@
+<include file='Index:header' />
+        
+<div class="comments entry">
+    <volist name="list" id="vo">
+    <div class='comment-entry'>
+        <h2><a class='color' style="color: #ff405c;" href="{:U('contest/view', array(), '')}/{$vo['id']}">{$vo["title"]}</a></h2>
+        <span>{$vo["time1"]}</span>
+        
+        <hr />
+        
+        <ul class='list-list'>
+            <foreach name="vo.prob" item="item" key='key'>
+            <li><a href="{:U('contest/view', array(), '')}/{$vo['id']}#prob-{$key}">[{$key}] {$item}</a></li>
+            </foreach>
+        </ul>
+        
+        <div class='cl'></div>
+    </div>
+    </volist>
+    
+    <div>
+        {$pager}
+    </div>
+</div>
+    
+<include file='Index:footer' />

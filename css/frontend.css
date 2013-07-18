@@ -1,0 +1,55 @@
+.well {
+    font-size: 14px;
+    color: #333;
+    line-height: 18px;
+}
+
+code{white-space: pre;}
+
+.pin-wrapper {
+    position: absolute;
+}
+
+.fl { float: left; }
+.fr { float: right; }
+.cl { clear: both; }
+#toc {
+    width: 200px;
+    position: absolute;
+    z-index: 999999;
+    top: 50px;
+    left: -180px;
+    
+    filter:alpha(opacity=80); 
+    -moz-opacity:0.8; 
+    opacity:0.8;
+}
+
+#toc-list {
+    width: 180px;
+}
+
+#toc-right {
+    width: 20px;
+    text-align: center;
+    height: 100%;
+}
+
+#toc-right span {
+    display: block;
+}
+
+.list-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.list-list li {
+    float: left;
+    margin-right: 15px;
+}
+
+.xpage {
+    text-align: center;
+}

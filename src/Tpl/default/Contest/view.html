@@ -1,0 +1,207 @@
+<include file='Index:header' />
+
+<script src="{$webroot}/codemirror/lib/codemirror.js"></script>
+<link rel="stylesheet" href="{$webroot}/codemirror/lib/codemirror.css">
+<link rel="stylesheet" href="{$webroot}/codemirror/theme/ambiance.css">
+<script src="{$webroot}/codemirror/addon/runmode/runmode.js"></script>
+<script src="{$webroot}/codemirror/mode/clike/clike.js"></script>
+<script src="{$webroot}/codemirror/mode/pascal/pascal.js"></script>
+
+<if condition='$contest eq null'>
+<h1>No such contest<span class='color'>!</span></h1>
+<else />
+
+<div class="row">
+    <h2 id="contest-title">{$contest["title"]}</h2>
+
+    <span class="label label-important">{$contest["time1"]}</span>
+    <span class="label label-important"><a href="{$contest['url']}" target="_blank">View the contest</a></span>
+</div>
+
+<hr />
+
+<script type="text/javascript">
+var toc_org_y;    
+    
+$(function(){
+    var toc_height = $("#toc-list").height();
+    $("#toc-right span").height(toc_height);
+    toc_org_y = $("#toc").offset().top;
+    
+    $("#toc").hover(
+        function(){
+            $(this).stop().animate({ "left" : 0 }, "normal");
+            $(this).find("i.icon").removeClass("icon-arrow-right");
+            $(this).find("i.icon").addClass("icon-arrow-left");
+        },
+        function(){
+            $(this).stop().animate({ "left" : "-180px" }, "normal");
+            $(this).find("i.icon").removeClass("icon-arrow-left");
+            $(this).find("i.icon").addClass("icon-arrow-right");
+        }
+    );
+        
+    $("#toc-right").click(function(){
+        $(this).stop().parent().animate({ "left" : "-180px" }, "normal");
+        $(this).find("i.icon").removeClass("icon-arrow-left");
+        $(this).find("i.icon").addClass("icon-arrow-right");
+    });
+    
+    $(document).scroll(function(){
+        var top = $(this).scrollTop();
+        
+        if(top > toc_org_y) {
+            $("#toc").css("top", top + "px");
+        } else {
+            $("#toc").css("top", toc_org_y + "px");
+        }
+    });
+});
+</script>
+
+<div id="toc" class="comment-entry comments">
+    <div class="fl" id="toc-list">
+        <ul>
+            <li><a href="#">Top</a></li>
+            <li><a href="#summary">Summary</a></li>
+            <li>
+                <a href="#problems">Problems</a>
+                <ul>
+                    <foreach name="contest.prob" item="item" key='key'>
+                        <li><a href="#prob-{$item.index}">[{$item.index}] {$item.title}</a></li>
+                    </foreach>
+                </ul>
+            </li>
+            <li><a href="#comments">Comments</a></li>
+        </ul>
+    </div>
+    
+    <div class="fr" id="toc-right">
+        <span style="cursor: pointer;"><i class="icon icon-arrow-right"></i></span>
+    </div>
+    
+    <div class="cl"></div>
+</div>
+
+<div class="row">
+    <div class="entry">
+        <h3 id="summary" class="color"><a href='#summary'>Summary</a></h3>
+
+        <article>
+        {$contest["html"]}
+        </article>
+    </div>
+</div>
+
+<hr />
+
+<div class="row">
+    <div class="comments entry">
+        <h3 id="problems" class="color"><a href='#problems'>Problems</a></h3>
+        
+        <foreach name="contest.prob" item="item" key='key'>
+            <div class='comment-entry'>
+                <h4 id='prob-{$item.index}'><a href='#prob-{$item.index}'>[{$item.index}] {$item.title}</a> <small><a href='{$item.url}' target='_blank'>View the problem</a></small> <small><a href='{:U("contest/markdown", array(), "")}/{$contest.id}/{$item.index}' target='_blank'>View the source</a></small></h4>
+                
+                <p class="meta">Tags: 
+                <volist id='vo' name='item.tags'>
+                    <span class='badge badge-warning'>{$vo}</span><php>echo " ";</php>
+                </volist></p>
+                
+                <div class="entry">
+                    <article>{$item.html}</article>
+                    
+                    <hr />
+                    
+                    <h5>Standard Code</h5>
+                    
+                    <!-- Code -->
+                    <div class="accordion standard-codes" id="code-{$item.index}">
+                        <foreach name="item.code" key="lang" item="code">
+                        <div class="accordion-group">
+                            <div class="accordion-heading">
+                                <php>$lang_class = $lang;</php>
+                                
+                                <div class='row-fluid'>
+                                    <div class='span10'>
+                                        <a class="accordion-toggle collapsed" data-toggle="collapse" data-parent="#code-{$item.index}" href="#code-{$item.index}-{$lang_class}">
+                                            <php>$lang_show = $lang; if($lang_show === "gpp") $lang_show = "C++"; if($lang_show === "gcc") $lang_show = "C"; if($lang_show === "fpc") $lang_show = "Pascal";</php>
+                                            <h6>
+                                                {$lang_show}
+                                            </h6>
+                                        </a>
+                                    </div>
+                                    <div class='span2' style='text-align: right;'>
+                                        <small>[<span style='cursor: pointer;' class='sapan' href="{:U('contest/code', array(), '')}/{$contest.id}/{$item.index}/{$lang_class}">New window</span>]</small>
+                                    </div>
+                                </div>
+                            </div>
+                            <div id="code-{$item.index}-{$lang_class}" class="accordion-body collapse">
+                                <div class="accordion-inner">
+                                    <textarea lang="{$lang}" id="textarea-{$item.index}-{$lang_show}">{$code}</textarea>
+                                </div>
+                            </div>
+                        </div>
+                        </foreach>
+                    </div>
+                </div>
+            </div>
+        </foreach>
+    </div>
+</div>
+
+
+<hr />
+
+<div class="row">
+    <div class="entry">
+        <h3 id="comments" class="color"><a href='#comments'>Comments</a></h3>
+        
+        <script type='text/javascript' charset='utf-8' src='http://open.denglu.cc/connect/commentcode?appid=YOURDENGLUAPPID&postid=psps-contest-{$contest.id}'></script>
+    </div>
+</div>
+
+<script src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML" type="text/javascript"></script>
+<script src="{$webroot}/google-code-prettify/run_prettify.js?skin=sunburst"></script>
+
+<script type="text/javascript">
+function pin_wrapper_reposition() {
+
+}
+    
+$(function(){
+    $(".sapan").click(function(){
+        window.open($(this).attr("href"));
+    });
+    
+    $(".standard-codes textarea").each(function(){
+        var lang = $(this).attr("lang");
+        
+        opt = {
+            lineNumbers     : true,
+            theme            : "ambiance",
+            indentUnit       : 4,
+            tabSize         : 4,
+            readOnly        : true,
+            lineWrapping      : true
+        };
+        
+        if(lang === "gcc") opt["mode"] = "text/x-csrc";
+        if(lang === "gpp") opt["mode"] = "text/x-c++src";
+        if(lang === "fpc") opt["mode"] = "text/x-pascal";
+        
+        var editor = CodeMirror.fromTextArea(document.getElementById($(this).attr("id")), opt);
+        editor.setSize("100%", "100%");
+    });
+    
+    $("pre code").each(function(){
+        $(this).parent().addClass("prettyprint");
+    });
+    
+    pin_wrapper_reposition();
+});
+</script>
+
+</if>
+
+<include file='Index:footer' />

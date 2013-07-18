@@ -1,0 +1,92 @@
+<script type="text/javascript" src="{$webroot}/epiceditor/js/epiceditor.min.js"></script>
+
+<div id="markdown-form">
+    <div id="md-epiceditor" class="well" style="height: 550px;"></div>
+    <br />
+    
+    <button id="submitmd" type="submit" class="btn btn-danger" data-loading-text="Saving...">Edit the Markdown</button> 
+    <button id="resetmd" type="button" class="btn btn-inverse">Reset Markdown</button>
+</div>
+
+<script type="text/javascript">
+var md_opts = {
+    container: 'md-epiceditor',
+    basePath: '{$webroot}/epiceditor',
+    clientSideStorage: true,
+    useNativeFullsreen: true,
+    parser: marked,
+    file: {
+        name: 'epiceditor',
+        defaultContent: '',
+        autoSave: 100
+    },
+    theme: {
+        base:'/themes/base/epiceditor.css',
+        preview:'/themes/preview/preview-dark.css',
+        editor:'/themes/editor/epic-dark.css'
+    },
+    focusOnLoad: false,
+    shortcut: {
+        modifier: 18,
+        fullscreen: 70,
+        preview: 80
+    }
+};
+var md_editor = null;
+var md_first = true;
+
+function markdown_init() {
+    md_opts["localStorageName"] = "problem-" + queryString["id"] + "-" + queryString["index"];
+    md_opts["file"]["defaultContent"] = old_content["md"];
+    md_opts["file"]["name"] = "problem-" + queryString["id"] + "-" + queryString["index"] + ".md";
+    
+    $("#submitmd").click(function(){
+        if($("#submitmd").html() === "Saving...") return false;
+        
+        console.log(md_opts);
+        
+        var id = queryString["id"];
+        var index = queryString["index"];
+        var md = md_editor.exportFile();
+        $("#submitmd").button("loading");
+        
+        $.post("{:U('pub/edit_problem_markdown', array(), 'json')}", {
+            "id"        : id,
+            "index"     : index,
+            "md"        : md
+        }, function(e){
+            var json = JSON.parse(e);
+            if(json["status"] === 0) {
+                $("#submitmd").button("reset");
+                alert_tip(json["content"], "Error");
+                return;
+            } else {
+                $("#submitmd").button("reset");
+                alert_tip("<span style='color: red;'>Succeed.</span>", "Succeed");
+                old_content = json["content"];
+                return;
+            }
+        });
+        
+        return false;
+    });
+}
+
+$(function(){
+    $("a#show-markdown-tab").on("shown", function(e){
+        if(!md_first) return;
+        
+        md_editor = new EpicEditor(md_opts);
+        md_editor.load();
+        md_editor.importFile("problem-" + queryString["id"] + "-" + queryString["index"] + ".md", old_content["md"]);
+        
+        md_first = false;
+    });
+    
+    $("#resetmd").click(function(){
+        if(old_content === null) return;
+        if(md_editor === null) return;
+        md_editor.importFile("problem-" + queryString["id"] + "-" + queryString["index"] + ".md", old_content["md"]);
+    });
+});
+</script>

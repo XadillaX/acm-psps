@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>[{$problem.index}] {$problem.title} :: Will be rendered by Pandoc</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        
+        <script src="{$webroot}/alejandra/js/jquery.js"></script>
+        
+        <script src="{$webroot}/codemirror/lib/codemirror.js"></script>
+        <link rel="stylesheet" href="{$webroot}/codemirror/lib/codemirror.css">
+        <link rel="stylesheet" href="{$webroot}/codemirror/theme/ambiance.css">
+        <script src="{$webroot}/codemirror/addon/runmode/runmode.js"></script>
+        <script src="{$webroot}/codemirror/mode/markdown/markdown.js"></script>
+        
+        <script type="text/javascript">
+        var lang = "{$lang}";
+
+        opt = {
+            lineNumbers     : true,
+            theme            : "ambiance",
+            indentUnit       : 4,
+            tabSize         : 4,
+            readOnly        : true,
+            lineWrapping      : true,
+            mode            : "text/x-markdown"
+        };
+            
+        $(function(){
+            var editor = CodeMirror.fromTextArea(document.getElementById("markdown"), opt);
+            editor.setSize("100%", "100%");
+        });
+        </script>
+    </head>
+    <body style='padding: 0; margin: 0; font-size: 14px;'>
+        <textarea id="markdown">{$md}</textarea>
+    </body>
+</html>
